@@ -14,3 +14,7 @@ p span {
 form.delete-form {
 	display: inline-block;
 }
+
+input {
+	display: inline-block;
+}
