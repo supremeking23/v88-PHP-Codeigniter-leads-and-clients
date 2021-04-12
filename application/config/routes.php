@@ -54,6 +54,7 @@ $route['products'] = 'products/index';
 $route['add-to-cart'] = 'products/add_to_cart';
 $route['cart'] = 'products/cart';
 $route['remove_item'] = 'products/remove_item';
+$route['checkout_process'] = 'products/checkout_process';
 // $route['show/(:any)'] = 'products/show/$1';
 // $route['edit/(:any)'] = 'products/edit/$1';
 // $route['new'] = 'products/new';

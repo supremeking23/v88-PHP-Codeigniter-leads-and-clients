@@ -19,6 +19,7 @@
             <div class="col-md-12">
                 <h2>Products</h2>
                 <?= $this->session->flashdata("remove-item"); ?>
+                <?= $this->session->flashdata("add-to-cart-success"); ?>
                
                 <table class="table">
                     <thead class="thead-dark">
@@ -36,8 +37,8 @@
                             <td><?= $item["product_name"]?></td>
                             
                             <td><?= $item["qty"]?></td>
-                            <td><?=  $item["price"] ?></td>
-                            <td><?= $item["sub_total"] ?></td>
+                            <td>$<?= $item["price"] ?></td>
+                            <td>$<?= $item["sub_total"] ?></td>
                             <td>
                                 <form class="" action="<?php base_url()?>remove_item" method="POST">     
                                     <input type="hidden" name="product-id" value="<?= $item["product_id"]; ?>">
@@ -47,11 +48,11 @@
                         </tr>
                     <?php endforeach;?>
                         <tr>
-                            <td colspan="4" class="text-center">Total : <?= (empty( $total["grand_total"])) ? "" : $total["grand_total"]?></td>
+                            <td colspan="5" class="text-center">Total : $<?= (empty( $total["grand_total"])) ? "" : $total["grand_total"]?></td>
                         </tr>
                     </tbody>
                 </table>
-                <a href="<?= base_url()?>">Add a new product</a>
+                <a href="<?= base_url()?>">Add new product to cart</a>
             </div>
         </div>
     </div>
@@ -63,7 +64,7 @@
 
                 <?= $this->session->flashdata("errors") ?>
                 
-                <form action="<?= base_url()?>create" method="POST">
+                <form action="<?= base_url()?>checkout_process" method="POST">
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" class="form-control" id="name" name="name" value=""  placeholder="Enter Your Name">

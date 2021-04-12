@@ -31,28 +31,45 @@ class Products extends CI_Controller {
     public function add_to_cart(){
         $qty = $this->input->post("qty");
         $product_id = $this->input->post("product-id");
-        $session_id = $this->session->session_id;
-        
-        if($this->session->has_userdata("cart_id")){
-            $cart_id = $this->session->userdata("cart_id");
-            
+        // $session_id = $this->session->session_id;
+
+        $this->load->library("form_validation");
+        $this->form_validation->set_rules('qty', 'Product quantity', 'required');
+        if ($this->form_validation->run() == FALSE){
+            $errors = validation_errors('<div class="alert alert-danger">', '</div>');
+            $this->session->set_flashdata('errors', $errors);
+            redirect(base_url());
         }else{
-            $cart_id = $this->product->add_product_to_cart($session_id);
-            $this->session->set_userdata("cart_id",$cart_id);
+
+            if($this->session->has_userdata("cart_id")){
+                $cart_id = $this->session->userdata("cart_id");
+                
+            }else{
+                // $cart_id = $this->product->add_product_to_cart($session_id);
+                $cart_id = $this->product->add_product_to_cart();
+                $this->session->set_userdata("cart_id",$cart_id);
+            }
+    
+    
+            $cart_details = array(
+                "qty" => $qty,
+                "product_id" => $product_id,
+                "cart_id" => $cart_id
+                
+            ); 
+           
+            $add_product = $this->product->add_product_to_cart_items($cart_details);
+            $get_items_in_cart = $this->product->get_product_count_from_cart($cart_id);
+            foreach($get_items_in_cart as $cart_item_detail){
+                $total_in_cart = $cart_item_detail["qty"];
+            }
+            $this->session->set_userdata("cart_total",$total_in_cart);
+            $this->session->set_flashdata('add-to-cart-success', '<div class="alert alert-success">Product has been added to cart</div>');
+    
+            redirect(base_url()."cart");
         }
-
-
-        $cart_details = array(
-            "qty" => $qty,
-            "product_id" => $product_id,
-            "cart_id" => $cart_id
-            
-        ); 
+        
        
-        $add_product = $this->product->add_product_to_cart_items($cart_details);
-        // update total in cart
-
-        redirect(base_url()."cart");
         
         // insert to database
     }
@@ -68,9 +85,51 @@ class Products extends CI_Controller {
 
     public function remove_item(){
        $this->product->remove_item_in_cart($this->input->post("product-id"));
+       $get_items_in_cart = $this->product->get_product_count_from_cart($this->session->userdata("cart_id"));
+       foreach($get_items_in_cart as $cart_item_detail){
+           $total_in_cart = $cart_item_detail["qty"];
+       }
+       $this->session->set_userdata("cart_total",$total_in_cart);
 
        $this->session->set_flashdata("remove-item",'<div class="alert alert-success">Item has been remove to cart</div>');
        redirect(base_url()."cart");
+    }
+
+
+    public function checkout_process(){
+
+        $this->load->library("form_validation");
+        $this->form_validation->set_rules('name', 'Name', 'required');
+        $this->form_validation->set_rules('address', 'Address', 'required');
+        $this->form_validation->set_rules('card', 'Card', 'required|numeric');
+        if ($this->form_validation->run() == FALSE){
+            $errors = validation_errors('<div class="alert alert-danger">', '</div>');
+            $this->session->set_flashdata('errors', $errors);
+            redirect(base_url()."cart");
+        }else{
+            $checkout_data = array(
+                "name" => $this->input->post("name"),
+                "address" => $this->input->post("address"),
+                "card" => $this->input->post("card"),
+            );
+    
+            $customer_id = $this->product->checkout($checkout_data);
+            $cart_details = array(
+                "cart_id" => $this->session->userdata("cart_id"),
+                "customer_id" => $customer_id,
+            );
+    
+            $this->product->update_cart($cart_details);
+            $this->session->set_flashdata("billing-success",'<div class="alert alert-success">Checkout successfull</div>');
+            
+    
+            // $this->session->sess_destroy();
+            $array_items = array("cart_id","cart_total");
+            $this->session->unset_userdata($array_items);
+            redirect(base_url());
+        }
+
+       
     }
 
     // public function show($id){	

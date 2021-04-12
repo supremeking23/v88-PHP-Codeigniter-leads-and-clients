@@ -16,10 +16,17 @@
 
     <div class="container mt-5">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <h2>Products</h2>
-                <?= $this->session->flashdata("add-product-success"); ?>
-                <?= $this->session->flashdata("delete-product-success"); ?>
+            </div>
+            <div class="col-md-4">
+                <h2>Your Cart: <?= ($this->session->has_userdata("cart_total")) ? $this->session->userdata("cart_total") : 0;?></h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <?= $this->session->flashdata("billing-success"); ?>
+                <?= $this->session->flashdata("errors"); ?>
                 <table class="table">
                     <thead class="thead-dark">
                         <tr>
@@ -40,14 +47,14 @@
                                     <input type="number" name="qty" class="form-control" value="" id="qty">
                                     <input type="hidden" name="product-id" value="<?= $product["id"]?>">
                                     <input type="hidden" name="product-name" value="<?= $product["product_name"]; ?>">
-                                    <input type="submit" class="btn btn-info btn-sm" value="Add">                            
+                                    <input type="submit" class="btn btn-info btn-sm" value="Buy">                            
                                 </form>
                             </td>
                         </tr>
                        <?php endforeach;?>
                     </tbody>
                 </table>
-                <a href="<?= base_url()?>new">Add a new product</a>
+               
             </div>
         </div>
     </div>
