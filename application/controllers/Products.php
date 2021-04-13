@@ -29,8 +29,8 @@ class Products extends CI_Controller {
 	}
 
     public function add_to_cart(){
-        $qty = $this->input->post("qty");
-        $product_id = $this->input->post("product-id");
+        $qty = $this->input->post("qty",TRUE);
+        $product_id = $this->input->post("product-id",TRUE);
         // $session_id = $this->session->session_id;
 
         $this->load->library("form_validation");
@@ -108,9 +108,9 @@ class Products extends CI_Controller {
             redirect(base_url()."cart");
         }else{
             $checkout_data = array(
-                "name" => $this->input->post("name"),
-                "address" => $this->input->post("address"),
-                "card" => $this->input->post("card"),
+                "name" => $this->input->post("name",TRUE),
+                "address" => $this->input->post("address",TRUE),
+                "card" => $this->input->post("card",TRUE),
             );
     
             $customer_id = $this->product->checkout($checkout_data);
